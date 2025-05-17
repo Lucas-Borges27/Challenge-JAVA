@@ -1,0 +1,94 @@
+@startuml UsuarioClassesDiagram
+
+' Classe Usuario (BO) - representa a entidade de usuário no banco de dados
+class Usuario {
+  +Long id
+  +String nome
+  +String preferenciaAcessibilidade
+  +String destino
+  +String senha
+  +String email
+  --
+  +persist() ' Persiste a entidade no banco de dados
+  +deleteById(id: Long): boolean ' Deleta a entidade pelo ID
+  +listAll(): List<Usuario> ' Lista todas as entidades Usuario
+  +findByIdOptional(id: Long): Optional<Usuario> ' Busca entidade por ID opcionalmente
+}
+Usuario --|> PanacheEntity : extends ' Herda de PanacheEntity para funcionalidades ORM
+
+' Classe UsuarioVO (VO) - objeto de valor para transferência de dados de usuário
+class UsuarioVO {
+  -int id
+  -String nome
+  -String preferenciaAcessibilidade
+  -String destino
+  -String senha
+  -String email
+  --
+  +getId(): int ' Retorna o ID do usuário
+  +setId(id: int) ' Define o ID do usuário
+  +getNome(): String ' Retorna o nome do usuário
+  +setNome(nome: String) ' Define o nome do usuário
+  +getPreferenciaAcessibilidade(): String ' Retorna a preferência de acessibilidade
+  +setPreferenciaAcessibilidade(pref: String) ' Define a preferência de acessibilidade
+  +getDestino(): String ' Retorna o destino do usuário
+  +setDestino(destino: String) ' Define o destino do usuário
+  +getSenha(): String ' Retorna a senha do usuário
+  +setSenha(senha: String) ' Define a senha do usuário
+  +getEmail(): String ' Retorna o email do usuário
+  +setEmail(email: String) ' Define o email do usuário
+  +toString(): String ' Representação em string do objeto
+}
+
+' Classe UsuarioDAO (DAO) - responsável pelas operações de acesso a dados para UsuarioVO
+class UsuarioDAO {
+  +cadastrarUsuario(usuario: UsuarioVO) ' Cadastra um novo usuário no banco
+  +autenticar(email: String, senha: String): UsuarioVO ' Autentica usuário pelo email e senha
+  +listarNomesUsuarios(): List<String> ' Lista nomes de todos os usuários
+  +buscarUsuarioPorId(id: int): UsuarioVO ' Busca usuário pelo ID
+  +atualizarUsuario(usuario: UsuarioVO) ' Atualiza dados do usuário
+  +deletarUsuario(id: int) ' Deleta usuário pelo ID
+}
+
+' Classe UsuarioService - camada de serviço que gerencia regras de negócio e interage com DAO e BO
+class UsuarioService {
+  -usuarioDAO: UsuarioDAO ' Instância do DAO para operações de dados
+  --
+  +listarTodos(): List<UsuarioVO> ' Lista todos os usuários como VO
+  +buscarPorId(id: long): UsuarioVO ' Busca usuário por ID
+  +criar(voUsuario: UsuarioVO): UsuarioVO ' Cria um novo usuário
+  +atualizar(id: Long, voUsuarioAtualizado: UsuarioVO): UsuarioVO ' Atualiza usuário existente
+  +deletar(id: Long): boolean ' Deleta usuário por ID
+  +cadastrarUsuario(usuario: UsuarioVO) ' Cadastra usuário via DAO
+  +autenticar(email: String, senha: String): UsuarioVO ' Autentica usuário
+  +listarNomesUsuarios(): List<String> ' Lista nomes de usuários
+  +buscarUsuarioPorId(id: int): UsuarioVO ' Busca usuário por ID via DAO
+  +atualizarUsuario(usuario: UsuarioVO): UsuarioVO ' Atualiza usuário via DAO
+  +deletarUsuario(id: int) ' Deleta usuário via DAO
+  +login(email: String, senha: String): UsuarioVO ' Realiza login do usuário
+  -validarUsuario(usuario: UsuarioVO) ' Valida dados do usuário
+  -toVO(usuario: Usuario): UsuarioVO ' Converte BO para VO
+  -toBO(vo: UsuarioVO): Usuario ' Converte VO para BO
+}
+
+' Classe UsuarioController - camada de controle que recebe requisições e chama o serviço
+class UsuarioController {
+  -usuarioService: UsuarioService ' Instância do serviço de usuário
+  --
+  +criarUsuario(usuario: UsuarioVO) ' Cria usuário
+  +obterUsuarioPorId(id: int): UsuarioVO ' Obtém usuário por ID
+  +atualizarUsuario(usuario: UsuarioVO) ' Atualiza usuário
+  +deletarUsuario(id: int) ' Deleta usuário
+  +autenticar(email: String, senha: String): UsuarioVO ' Autentica usuário
+  +listarNomesUsuarios(): List<String> ' Lista nomes de usuários
+}
+
+' Relacionamentos entre classes
+UsuarioService --> UsuarioDAO : usa
+UsuarioController --> UsuarioService : usa
+UsuarioDAO --> UsuarioVO : usa
+UsuarioService --> Usuario : usa
+UsuarioService --> UsuarioVO : converte entre
+Usuario <|-- PanacheEntity
+
+@enduml
