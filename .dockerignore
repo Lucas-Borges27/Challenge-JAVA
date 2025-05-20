@@ -1,4 +1,5 @@
 *
+!src/
 !mvnw
 !.mvn/
 !target/*-runner

@@ -17,7 +17,8 @@ COPY src src
 RUN chmod +x mvnw
 
 # Build the application in native mode or JVM mode (here using package)
-RUN ./mvnw package -DskipTests
+RUN ./mvnw package -DskipTests -Dquarkus.package.type=uber-jar
+RUN ls -l /app/target
 
 # Stage 2: Create runtime image
 FROM eclipse-temurin:21-jdk
@@ -25,7 +26,7 @@ FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
 # Copy the built jar from the build stage
-COPY --from=build /app/target/*-runner.jar app.jar
+COPY --from=build /app/target/challenge-dev.jar app.jar
 
 # Expose the default Quarkus port
 EXPOSE 8080
