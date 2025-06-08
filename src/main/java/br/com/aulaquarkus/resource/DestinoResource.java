@@ -34,7 +34,7 @@ public class DestinoResource {
      */
     @GET
     public List<Destino> listarTodosDestinos() {
-        Cookie userIdCookie = null;
+        io.vertx.core.http.Cookie userIdCookie = null;
         if (routingContext != null && routingContext.request() != null) {
             userIdCookie = routingContext.request().getCookie("userId");
         }
@@ -93,10 +93,9 @@ public class DestinoResource {
         if (destino.nome == null || destino.nome.trim().isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity("O campo 'nome' é obrigatório.").build();
         }
-        io.vertx.core.http.HttpServerRequest request = routingContext.request();
         io.vertx.core.http.Cookie userIdCookie = null;
-        if (request != null && request.headers() != null) {
-            userIdCookie = request.getCookie("userId");
+        if (routingContext != null && routingContext.request() != null) {
+            userIdCookie = routingContext.request().getCookie("userId");
             if (userIdCookie != null) {
                 System.out.println("Cookie userId found: " + userIdCookie.getValue());
             } else {
@@ -150,6 +149,26 @@ public class DestinoResource {
     @DELETE
     @Path("/{id}")
     public Response deletarDestino(@PathParam("id") Long id) {
+        io.vertx.core.http.Cookie userIdCookie = null;
+        if (routingContext != null && routingContext.request() != null) {
+            userIdCookie = routingContext.request().getCookie("userId");
+        }
+        if (userIdCookie == null) {
+            System.err.println("Usuário não autenticado: cookie userId não encontrado.");
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Usuário não autenticado.").build();
+        }
+        Long userId;
+        try {
+            userId = Long.parseLong(userIdCookie.getValue());
+            System.out.println("UserId cookie value: " + userId);
+        } catch (NumberFormatException e) {
+            System.err.println("ID de usuário inválido no cookie: " + userIdCookie.getValue());
+            return Response.status(Response.Status.BAD_REQUEST).entity("ID de usuário inválido no cookie.").build();
+        }
+        if (usuarioService.buscarPorId(userId) == null) {
+            System.err.println("Usuário não encontrado para ID: " + userId);
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Usuário não encontrado.").build();
+        }
         if (destinoService.deletar(id)) {
             return Response.noContent().build();
         }
