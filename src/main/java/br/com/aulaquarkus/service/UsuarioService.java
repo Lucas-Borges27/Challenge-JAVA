@@ -4,7 +4,6 @@ import br.com.aulaquarkus.model.VO.UsuarioVO;
 import br.com.aulaquarkus.model.BO.Usuario;
 import io.quarkus.hibernate.orm.panache.PanacheEntity_;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
@@ -35,6 +34,18 @@ public class UsuarioService {
         Usuario usuario = (Usuario) Usuario.findByIdOptional(id)
                 .orElseThrow(() -> new NotFoundException("Usuário com ID " + id + " não encontrado"));
         return toVO(usuario);
+    }
+
+    /**
+     * Busca o objeto Usuario (BO) pelo seu ID.
+     *
+     * @param id ID do usuário.
+     * @return Objeto Usuario correspondente.
+     * @throws NotFoundException se o usuário não for encontrado.
+     */
+    public Usuario buscarUsuarioEntityPorId(Long id) {
+        return (Usuario) Usuario.findByIdOptional(id)
+                .orElseThrow(() -> new NotFoundException("Usuário com ID " + id + " não encontrado"));
     }
 
     /**
@@ -92,6 +103,20 @@ public class UsuarioService {
      */
     public UsuarioService() {
         this.usuarioDAO = new br.com.aulaquarkus.model.DAO.UsuarioDAO();
+    }
+
+    /**
+     * Recupera os últimos destinos do usuário.
+     * @param userId ID do usuário.
+     * @return String com os últimos destinos ou null se não existir.
+     * @throws RuntimeException em caso de erro.
+     */
+    public String obterUltimosDestinos(int userId) {
+        try {
+            return usuarioDAO.buscarDestinosPorUsuarioId(userId);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao obter últimos destinos: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -184,4 +209,3 @@ public class UsuarioService {
         }
     }
 }
-

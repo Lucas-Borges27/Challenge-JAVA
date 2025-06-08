@@ -98,7 +98,15 @@ public class UsuarioResource {
     public Response login(LoginDTO loginDTO) {
         try {
             UsuarioVO usuario = usuarioService.login(loginDTO.getEmail(), loginDTO.getSenha());
-            return Response.ok(usuario).build();
+            String cookieHeader = "userId=" + usuario.getId() +
+                    "; Path=/" +
+                    "; HttpOnly" +
+                    // Removed Secure flag temporarily for testing; add back in production with HTTPS
+                    // "; Secure" +
+                    "; SameSite=None";
+            return Response.ok(usuario)
+                    .header("Set-Cookie", cookieHeader)
+                    .build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(new ErrorResponse(e.getMessage()))
@@ -115,5 +123,5 @@ public class UsuarioResource {
         }
 
     }
-
+ 
 }

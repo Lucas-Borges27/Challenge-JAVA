@@ -144,16 +144,39 @@ public class UsuarioDAO {
      * @throws SQLException em caso de erro no banco de dados.
      */
     public void atualizarUsuario(UsuarioVO usuario) throws SQLException {
-        String sql = "UPDATE USUARIOS SET NOME = ?, EMAIL = ?, SENHA = ?, PREFERENCIA_ACESSIBILIDADE = ?, DESTINO = ? WHERE ID = ?";
+        String sql = "UPDATE USUARIOS SET NOME = ?, EMAIL = ?, SENHA = ?, PREFERENCIA_ACESSIBILIDADE = ? WHERE ID = ?";
         try (Connection conn = GerenciadorDeCliente.conexao();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, usuario.getNome());
             pstmt.setString(2, usuario.getEmail());
             pstmt.setString(3, usuario.getSenha());
+            pstmt.setString(4, usuario.getPreferenciaAcessibilidade());
             pstmt.setInt(6, usuario.getId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new SQLException("Erro ao atualizar usuário: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Busca os destinos do usuário pelo ID.
+     * @param userId ID do usuário.
+     * @return String com os destinos do usuário.
+     * @throws SQLException em caso de erro no banco de dados.
+     */
+    public String buscarDestinosPorUsuarioId(int userId) throws SQLException {
+        String sql = "SELECT DESTINO FROM USUARIOS WHERE ID = ?";
+        try (Connection conn = GerenciadorDeCliente.conexao();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("DESTINO");
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Erro ao buscar destinos do usuário: " + e.getMessage());
         }
     }
 

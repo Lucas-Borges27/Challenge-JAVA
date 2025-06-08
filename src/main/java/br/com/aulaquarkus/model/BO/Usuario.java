@@ -26,12 +26,6 @@ public class Usuario extends PanacheEntity {
     public String preferenciaAcessibilidade;
 
     /**
-     * Destino do usuário.
-     */
-    @Column(name = "DESTINO", length = 255)
-    public String destino;
-
-    /**
      * Senha do usuário. Campo obrigatório.
      */
     @Column(name = "SENHA", nullable = false, length = 255)

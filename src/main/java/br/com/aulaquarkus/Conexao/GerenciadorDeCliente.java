@@ -3,9 +3,6 @@ package br.com.aulaquarkus.Conexao;
 import oracle.jdbc.pool.OracleDataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
