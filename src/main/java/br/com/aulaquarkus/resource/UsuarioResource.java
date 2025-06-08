@@ -101,8 +101,7 @@ public class UsuarioResource {
             String cookieHeader = "userId=" + usuario.getId() +
                     "; Path=/" +
                     "; HttpOnly" +
-                    // Removed Secure flag temporarily for testing; add back in production with HTTPS
-                    // "; Secure" +
+                    "; Secure" +  // Enable Secure flag for HTTPS
                     "; SameSite=None";
             return Response.ok(usuario)
                     .header("Set-Cookie", cookieHeader)
